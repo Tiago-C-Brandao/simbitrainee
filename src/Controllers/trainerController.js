@@ -1,7 +1,7 @@
 // const pool = require('../Database/DBconnection');
 // const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
-const TrainerRespository = require('../Models/treinerModel');
+const TrainerRespository = require('../Models/trainerModel');
 
 //--------------------------------- GET ----------------------------------//
 

@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const trainers = require('../Controllers/trainerController');
+
 const { verifyJWT } = require('../Services/VerifyJWT');
 const router = Router();
 
