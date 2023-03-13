@@ -4,6 +4,7 @@ const { verifyJWT } = require('../Services/VerifyJWT');
 const router = Router();
 
 router.get('/members/find_all', members.findAll);
+router.get('/members/find_member', members.findMember);
 
 router.post('/trainers/:trainer_id/members/creater', members.addMember);
 
