@@ -21,7 +21,7 @@ function findMember(req, res) {
       MemberRespository.findAll({
         where: {
           member_name: {
-            [Op.like]: `${member_name}%`,
+            [Op.like]: `${member_name.toUpperCase()}%`,
           }
         }
       }).then((result) => res.status(200).json(result));
@@ -38,7 +38,8 @@ async function addMember(req, res) {
     try {
         await MemberRespository.create(
             {
-                member_name, member_email, password, trainer_id
+                member_name: `${member_name.toUpperCase()}`, 
+                member_email, password, trainer_id
             }, 
             {
                 where: {
@@ -60,7 +61,8 @@ async function updateMember(req, res) {
     try {
         await MemberRespository.update(
             {
-                member_name, member_email, password
+                member_name: `${member_name.toUpperCase()}`, 
+                member_email, password
             },
             {
                 where: {
