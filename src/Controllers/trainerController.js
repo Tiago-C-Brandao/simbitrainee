@@ -1,56 +1,79 @@
 // const pool = require('../Database/DBconnection');
 // const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
-const TrainerRespository = require('../Models/treinerModel');
+const TrainerRespository = require('../Models/trainerModel');
 
 //--------------------------------- GET ----------------------------------//
 
 function findAll(req, res) {
-    TrainerRespository.findAll().then((result) => res.json(result));
+    try{
+        TrainerRespository.findAll().then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }
 
 function findTrainer(req, res) {
-    TrainerRespository.findByPk(req.params.id).then((result) => res.json(result));
+    const { trainer_id } = req.params
+
+    try {
+        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }
 
 //---------------------------------- POST -------------------------------//
 
 function addTrainer(req, res) {
-    TrainerRespository.create({
-        trainer_name: req.body.trainer_name,
-        trainer_email: req.body.trainer_email,
-        password: req.body.password,
-    }).then((result) => res.json(result));
+    const { trainer_name, trainer_email, password } = req.body
+    try {
+        TrainerRespository.create({
+            trainer_name, trainer_email, password,
+        }).then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }
 
 //---------------------------------- PUT ---------------------------------//
 
 async function updateTrainer(req, res) {
-    await TrainerRespository.update(
-        {
-            trainer_name: req.body.trainer_name,
-            trainer_email: req.body.trainer_email,
-            password: req.body.password,
-        },
-        {
-            where: {
-                trainer_id: req.params.id,
+    const { trainer_id } = req.params
+    const { trainer_name, trainer_email, password } = req.body
+
+    try {
+        await TrainerRespository.update(
+            {
+                trainer_name, trainer_email, password,
             },
-        }
-    );
-    TrainerRespository.findByPk(req.params.id).then((result) => res.json(result));
+            {
+                where: {
+                    trainer_id,
+                },
+            }
+        );
+        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }
 
 //------------------------------------- DELETE -------------------------------//
 
 async function deleteTrainer(req, res) {
-    await TrainerRespository.destroy({
-        where: {
-            trainer_id: req.params.id,
-        },
-    });
-
-    TrainerRespository.findAll().then((result) => res.json(result));
+    const { trainer_id } = req.params
+    try {
+        await TrainerRespository.destroy({
+            where: {
+                trainer_id,
+            },
+        });
+    
+        TrainerRespository.findAll().then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }
 
 //------------------------------------- EXPORT -----------------------------//

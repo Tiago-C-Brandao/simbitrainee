@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const database = require('../Database/db');
 
-module.exports = database.define('trainer', {
+const Trainer = database.define('trainer', {
     trainer_id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -24,3 +24,10 @@ module.exports = database.define('trainer', {
         type: Sequelize.JSON
     },
 });
+
+Trainer.associate = (models) => {
+    Trainer.hasMany(models.Member,
+      { foreignKey: 'trainer_id', as: 'members' });
+  };
+
+module.exports = Trainer

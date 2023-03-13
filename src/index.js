@@ -1,5 +1,6 @@
 const express = require ('express');
-const routes = require('./Routes/trainerRoute')
+const routeTrainer = require('./Routes/trainerRoute');
+const routeMember = require('./Routes/memberRoute')
 const database = require('./Database/db');
 
 require("dotenv-safe").config();
@@ -8,7 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(routes);
+app.use(routeTrainer, routeMember);
 
 database.sync();
 
