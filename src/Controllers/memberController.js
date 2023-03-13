@@ -17,21 +17,20 @@ function findAll(req, res) {
 //---------------------------------- POST -------------------------------//
 
 async function addMember(req, res) {
+    const { trainer_id } = req.params;
+    const { member_name, member_email, password } = req.body;
     try {
         await MemberRespository.create(
             {
-                member_name: req.body.member_name,
-                member_email: req.body.member_email,
-                password: req.body.password,
-                trainer_id: req.params.id
+                member_name, member_email, password, trainer_id
             }, 
             {
                 where: {
-                    trainer_id: req.params.id,
+                    trainer_id,
                 }
             }
         ).then((result) => res.status(200).json(result));
-        TrainerRespository.findByPk(req.params.id)
+        TrainerRespository.findByPk(trainer_id)
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -40,20 +39,20 @@ async function addMember(req, res) {
 //---------------------------------- PUT ---------------------------------//
 
 async function updateMember(req, res) {
+    const { member_id } = req.params;
+    const { member_name, member_email, password } = req.body;
     try {
         await MemberRespository.update(
             {
-                member_name: req.body.member_name,
-                member_email: req.body.member_email,
-                password: req.body.password,
+                member_name, member_email, password
             },
             {
                 where: {
-                    member_id: req.params.id,
+                    member_id
                 },
             }
         );
-        MemberRespository.findByPk(req.params.id).then((result) => res.status(200).json(result));
+        MemberRespository.findByPk(member_id).then((result) => res.status(200).json(result));
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -62,10 +61,11 @@ async function updateMember(req, res) {
 //------------------------------------- DELETE -------------------------------//
 
 async function deleteMember(req, res) {
+    const { member_id } = req.params
     try {
         await MemberRespository.destroy({
             where: {
-                member_id: req.params.id,
+                member_id,
             },
         });
     

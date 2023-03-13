@@ -5,10 +5,10 @@ const router = Router();
 
 router.get('/members', members.findAll);
 
-router.post('/members', members.addMember);
+router.post('/trainers/:trainer_id/members', members.addMember);
 
-router.patch('/members/:id', members.updateMember);
+router.patch('/members/:member_id', members.updateMember);
 
-router.delete('/members/:id', members.deleteMember);
+router.delete('/members/:member_id', members.deleteMember);
 
 module.exports = router;

@@ -14,8 +14,10 @@ function findAll(req, res) {
 }
 
 function findTrainer(req, res) {
+    const { trainer_id } = req.params
+
     try {
-        TrainerRespository.findByPk(req.params.id).then((result) => res.status(200).json(result));
+        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -24,11 +26,10 @@ function findTrainer(req, res) {
 //---------------------------------- POST -------------------------------//
 
 function addTrainer(req, res) {
+    const { trainer_name, trainer_email, password } = req.body
     try {
         TrainerRespository.create({
-            trainer_name: req.body.trainer_name,
-            trainer_email: req.body.trainer_email,
-            password: req.body.password,
+            trainer_name, trainer_email, password,
         }).then((result) => res.status(200).json(result));
     } catch (err) {
         return res.status(500).send(err);
@@ -38,20 +39,21 @@ function addTrainer(req, res) {
 //---------------------------------- PUT ---------------------------------//
 
 async function updateTrainer(req, res) {
+    const { trainer_id } = req.params
+    const { trainer_name, trainer_email, password } = req.body
+
     try {
         await TrainerRespository.update(
             {
-                trainer_name: req.body.trainer_name,
-                trainer_email: req.body.trainer_email,
-                password: req.body.password,
+                trainer_name, trainer_email, password,
             },
             {
                 where: {
-                    trainer_id: req.params.id,
+                    trainer_id,
                 },
             }
         );
-        TrainerRespository.findByPk(req.params.id).then((result) => res.status(200).json(result));
+        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -60,10 +62,11 @@ async function updateTrainer(req, res) {
 //------------------------------------- DELETE -------------------------------//
 
 async function deleteTrainer(req, res) {
+    const { trainer_id } = req.params
     try {
         await TrainerRespository.destroy({
             where: {
-                trainer_id: req.params.id,
+                trainer_id,
             },
         });
     
