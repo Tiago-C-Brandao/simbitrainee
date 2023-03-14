@@ -1,6 +1,7 @@
 // const pool = require('../Database/DBconnection');
 // const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
+const { Op } = Sequelize;
 const MemberRespository = require('../Models/memberModel');
 const TrainerRespository = require('../Models/trainerModel');
 
@@ -13,6 +14,21 @@ function findAll(req, res) {
         return res.status(500).send(err);
     }
 }
+
+function findMember(req, res) {
+    const { member_name } = req.body;
+    try {
+      MemberRespository.findAll({
+        where: {
+          member_name: {
+            [Op.iLike]: `${member_name}%`,
+          }
+        }
+      }).then((result) => res.status(200).json(result));
+    } catch (err) {
+      return res.status(500).send(err);
+    }
+  }
 
 //---------------------------------- POST -------------------------------//
 
@@ -79,6 +95,7 @@ async function deleteMember(req, res) {
 
 module.exports = {
     findAll,
+    findMember,
     addMember,
     updateMember,
     deleteMember
