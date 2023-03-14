@@ -29,8 +29,7 @@ function addTrainer(req, res) {
     const { trainer_name, trainer_email, password } = req.body
     try {
         TrainerRespository.create({
-            trainer_name: `${trainer_name.toUpperCase()}`, 
-            trainer_email, password,
+            trainer_name, trainer_email, password,
         }).then((result) => res.status(200).json(result));
     } catch (err) {
         return res.status(500).send(err);
@@ -46,8 +45,7 @@ async function updateTrainer(req, res) {
     try {
         await TrainerRespository.update(
             {
-                trainer_name: `${trainer_name.toUpperCase()}`, 
-                trainer_email, password,
+                trainer_name, trainer_email, password,
             },
             {
                 where: {
