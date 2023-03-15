@@ -2,6 +2,7 @@
 // const jwt = require('jsonwebtoken');
 const Sequelize = require('sequelize');
 const TrainerRespository = require('../Models/trainerModel');
+const MemberRespository = require('../Models/memberModel');
 
 //--------------------------------- GET ----------------------------------//
 
@@ -36,7 +37,7 @@ function addTrainer(req, res) {
     }
 }
 
-//---------------------------------- PUT ---------------------------------//
+//---------------------------------- PATCH ---------------------------------//
 
 async function updateTrainer(req, res) {
     const { trainer_id } = req.params
@@ -50,6 +51,91 @@ async function updateTrainer(req, res) {
             {
                 where: {
                     trainer_id,
+                },
+            }
+        );
+        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
+}
+
+async function selectMember(req, res) {
+    const { trainer_id } = req.params
+    const { member_id } = req.body
+
+    try {
+        const trainer = await TrainerRespository.findByPk(trainer_id);
+        const member = await MemberRespository.findByPk(member_id);
+
+        if(trainer.members !== null) {
+            if (trainer.members.find(member => member.id === member_id)) {
+                return res.status(400).json({ message: 'Membro já está na lista do treinador' });
+            }
+            await verifyMember(member_id, trainer_id);
+        }
+
+        const updatedMemberList = trainer.members ? [...trainer.members, {id: member.member_id, name: member.member_name, email: member.member_email}] : [{id: member.member_id, name: member.member_name, email: member.member_email}];
+
+        await TrainerRespository.update(
+            {
+                members: updatedMemberList,
+            },
+            {
+                where: {
+                    trainer_id,
+                },
+            }
+        );
+
+        await MemberRespository.update(
+            {
+                trainer_id: `${trainer_id}`,
+            },
+            {
+                where: {
+                    member_id,
+                },
+            }
+        );
+        MemberRespository.findByPk(member_id).then((result) => res.status(200).json(result));
+    } catch (err) {
+        return res.status(500).send(err);
+    }
+}
+
+async function removeMember(req, res) {
+    const { trainer_id } = req.params
+    const { member_id } = req.body
+
+    try {
+        const trainer = await TrainerRespository.findByPk(trainer_id)
+
+        const updatedMemberList = trainer.members.filter(member => member.id !== member_id);
+
+        if (updatedMemberList.length === trainer.members.length) {
+            return res.status(404).send("Membro não encontrado na lista de membros do treinador");
+        }
+
+
+        await TrainerRespository.update(
+            {
+                members: updatedMemberList,
+            },
+            {
+                where: {
+                    trainer_id,
+                },
+            }
+        );
+
+        await MemberRespository.update(
+            {
+                trainer_id: `${trainer_id}`,
+            },
+            {
+                where: {
+                    member_id,
                 },
             }
         );
@@ -76,6 +162,33 @@ async function deleteTrainer(req, res) {
     }
 }
 
+//--------------------------------- OTHER ----------------------------------//
+
+async function verifyMember(member_id, trainer_id) {
+    try {
+      const member = await MemberRespository.findByPk(member_id);
+      
+      if (member.trainer_id !== null && member.trainer_id !== trainer_id) {
+        
+        const oldTrainer = await TrainerRespository.findByPk(member.trainer_id);
+        const updatedMemberList = oldTrainer.members.filter((member) => member.id !== member_id);
+        
+        await TrainerRespository.update(
+            {
+                members: updatedMemberList
+            },
+            {
+                where:{
+                    trainer_id: oldTrainer.trainer_id
+                },
+            }
+        );
+      }
+    } catch (err) {
+        return res.status(500).send(err);
+    }
+  }
+
 //------------------------------------- EXPORT -----------------------------//
 
 module.exports = {
@@ -83,5 +196,7 @@ module.exports = {
     findTrainer,
     addTrainer,
     updateTrainer,
+    selectMember,
+    removeMember,
     deleteTrainer
 }
