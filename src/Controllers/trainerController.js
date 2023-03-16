@@ -72,7 +72,12 @@ async function selectMember(req, res) {
             if (trainer.members.find(member => member.id === member_id)) {
                 return res.status(400).json({ message: 'Membro já está na lista do treinador' });
             }
-            await verifyMember(member_id, trainer_id);
+            if (member.trainer_id !== null && member.trainer_id !== trainer_id) {
+        
+                const oldTrainer = await TrainerRespository.findByPk(member.trainer_id);
+                
+                return res.status(400).json({ message: `O membro que você está tentando adicionar já está na lista de membros do ${oldTrainer.trainer_name}.`});
+            }
         }
 
         const updatedMemberList = trainer.members ? [...trainer.members, {id: member.member_id, name: member.member_name, email: member.member_email}] : [{id: member.member_id, name: member.member_name, email: member.member_email}];
@@ -161,33 +166,6 @@ async function deleteTrainer(req, res) {
         return res.status(500).send(err);
     }
 }
-
-//--------------------------------- OTHER ----------------------------------//
-
-async function verifyMember(member_id, trainer_id) {
-    try {
-      const member = await MemberRespository.findByPk(member_id);
-      
-      if (member.trainer_id !== null && member.trainer_id !== trainer_id) {
-        
-        const oldTrainer = await TrainerRespository.findByPk(member.trainer_id);
-        const updatedMemberList = oldTrainer.members.filter((member) => member.id !== member_id);
-        
-        await TrainerRespository.update(
-            {
-                members: updatedMemberList
-            },
-            {
-                where:{
-                    trainer_id: oldTrainer.trainer_id
-                },
-            }
-        );
-      }
-    } catch (err) {
-        return res.status(500).send(err);
-    }
-  }
 
 //------------------------------------- EXPORT -----------------------------//
 
