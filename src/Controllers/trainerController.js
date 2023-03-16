@@ -68,6 +68,14 @@ async function addMemberToTrainer(req, res) {
         const trainer = await TrainerRespository.findByPk(trainer_id);
         const member = await MemberRespository.findByPk(member_id);
 
+        if(trainer === null) {
+            return res.status(400).json({ message: 'Este treinador não existe' });
+        }
+
+        if(member === null) {
+            return res.status(400).json({ message: 'Este membro não existe' });
+        }
+
         if(trainer.members !== null) {
             if (trainer.members.find(member => member.id === member_id)) {
                 return res.status(400).json({ message: 'Membro já está na lista do treinador' });
@@ -115,6 +123,15 @@ async function removeMember(req, res) {
 
     try {
         const trainer = await TrainerRespository.findByPk(trainer_id)
+        const member = await MemberRespository.findByPk(member_id);
+
+        if(trainer === null) {
+            return res.status(400).json({ message: 'Este treinador não existe' });
+        }
+
+        if(member === null) {
+            return res.status(400).json({ message: 'Este membro não existe' });
+        }
 
         const updatedMemberList = trainer.members.filter(member => member.id !== member_id);
 
