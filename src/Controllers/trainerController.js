@@ -60,7 +60,7 @@ async function updateTrainer(req, res) {
     }
 }
 
-async function selectMember(req, res) {
+async function addMemberToTrainer(req, res) {
     const { trainer_id } = req.params
     const { member_id } = req.body
 
@@ -174,7 +174,7 @@ module.exports = {
     findTrainer,
     addTrainer,
     updateTrainer,
-    selectMember,
+    addMemberToTrainer,
     removeMember,
     deleteTrainer
 }
