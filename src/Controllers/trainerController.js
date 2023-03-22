@@ -44,6 +44,12 @@ async function updateTrainer(req, res) {
     const { trainer_name, trainer_email, password } = req.body
 
     try {
+        const trainer = await TrainerRespository.findByPk(trainer_id);
+
+        if(trainer === null) {
+            return res.status(400).json({ message: 'Este treinador não existe' });
+        }
+
         await TrainerRespository.update(
             {
                 trainer_name, trainer_email, password,
@@ -54,7 +60,7 @@ async function updateTrainer(req, res) {
                 },
             }
         );
-        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
+        res.status(200).json(trainer);
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -70,25 +76,32 @@ async function addMemberToTrainer(req, res) {
 
         if(trainer === null) {
             return res.status(400).json({ message: 'Este treinador não existe' });
-        }
-
-        if(member === null) {
+        } else if(member === null) {
             return res.status(400).json({ message: 'Este membro não existe' });
-        }
-
+        } 
+        
         if(trainer.members !== null) {
             if (trainer.members.find(member => member.id === member_id)) {
                 return res.status(400).json({ message: 'Membro já está na lista do treinador' });
-            }
-            if (member.trainer_id !== null && member.trainer_id !== trainer_id) {
-        
+            } else if (member.trainer_id !== null && member.trainer_id !== trainer.trainer_id) {
                 const oldTrainer = await TrainerRespository.findByPk(member.trainer_id);
-                
-                return res.status(400).json({ message: `O membro que você está tentando adicionar já está na lista de membros do ${oldTrainer.trainer_name}.`});
+                const updatedMemberListOldTrainer = oldTrainer.members.filter((member) => member.id !== member_id);
+                await TrainerRespository.update(
+                    {
+                        members: updatedMemberListOldTrainer,
+                    },
+                    {
+                        where: {
+                            trainer_id: oldTrainer.trainer_id,
+                        },
+                    }
+                );
             }
         }
+        
+        const addMemberList = {id: member.member_id, name: member.member_name, email: member.member_email}
 
-        const updatedMemberList = trainer.members ? [...trainer.members, {id: member.member_id, name: member.member_name, email: member.member_email}] : [{id: member.member_id, name: member.member_name, email: member.member_email}];
+        const updatedMemberList = trainer.members ? [...trainer.members, addMemberList] : [addMemberList];
 
         await TrainerRespository.update(
             {
@@ -111,13 +124,13 @@ async function addMemberToTrainer(req, res) {
                 },
             }
         );
-        MemberRespository.findByPk(member_id).then((result) => res.status(200).json(result));
+        res.status(200).json(member);
     } catch (err) {
         return res.status(500).send(err);
     }
 }
 
-async function removeMember(req, res) {
+async function removeMemberToTrainer(req, res) {
     const { trainer_id } = req.params
     const { member_id } = req.body
 
@@ -127,9 +140,7 @@ async function removeMember(req, res) {
 
         if(trainer === null) {
             return res.status(400).json({ message: 'Este treinador não existe' });
-        }
-
-        if(member === null) {
+        }else if(member === null) {
             return res.status(400).json({ message: 'Este membro não existe' });
         }
 
@@ -153,7 +164,7 @@ async function removeMember(req, res) {
 
         await MemberRespository.update(
             {
-                trainer_id: `${trainer_id}`,
+                trainer_id: 1,
             },
             {
                 where: {
@@ -161,7 +172,7 @@ async function removeMember(req, res) {
                 },
             }
         );
-        TrainerRespository.findByPk(trainer_id).then((result) => res.status(200).json(result));
+        res.status(200).json(trainer);
     } catch (err) {
         return res.status(500).send(err);
     }
@@ -172,6 +183,12 @@ async function removeMember(req, res) {
 async function deleteTrainer(req, res) {
     const { trainer_id } = req.params
     try {
+        const trainer = await TrainerRespository.findByPk(trainer_id);
+
+        if(trainer === null) {
+            return res.status(400).json({ message: 'Este treinador não existe' });
+        }
+
         await TrainerRespository.destroy({
             where: {
                 trainer_id,
@@ -192,6 +209,6 @@ module.exports = {
     addTrainer,
     updateTrainer,
     addMemberToTrainer,
-    removeMember,
+    removeMemberToTrainer,
     deleteTrainer
 }

@@ -13,7 +13,7 @@ router.post('/trainers/creater', trainers.addTrainer);
 
 router.patch('/trainers/update/:trainer_id', trainers.updateTrainer);
 router.patch('/trainers/select_member/:trainer_id', trainers.addMemberToTrainer);
-router.patch('/trainers/remove_member/:trainer_id', trainers.removeMember);
+router.patch('/trainers/remove_member/:trainer_id', trainers.removeMemberToTrainer);
 
 router.delete('/trainers/delete/:trainer_id', trainers.deleteTrainer);
 
