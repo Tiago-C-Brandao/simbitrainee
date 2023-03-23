@@ -31,6 +31,36 @@ async function findTask(req, res) {
     }
 }
 
+async function findMemberTask(req, res) {
+    const { trainer_id, member_id } = req.params
+    try {
+        const trainer = await TrainerRespository.findByPk(trainer_id);
+        const member = await MemberRespository.findByPk(member_id);
+
+        if(!trainer) {
+            return res.status(404).json({ message: 'Este trainador não existe' });
+        } else if(!member) {
+            return res.status(404).json({ message: 'Este membro não existe' });
+        }
+
+        const task = await TaskRepository.findAll(
+            {
+                where: {
+                    member_id
+                }
+            }
+        );
+
+        if(!task) {
+            return res.status(404).json({ message: 'Esta task não existe' });
+        }
+
+        res.status(200).json(task)
+    } catch (err) {
+        return res.status(500).send(err);
+    }
+}
+
 //--------------------------------- POST ----------------------------------//
 
 async function addTask(req, res) {
@@ -90,7 +120,9 @@ async function updateTask(req, res) {
                 }
             }
         );
-        TaskRepository.findByPk(task_id).then((result) => res.status(200).json(result));
+        const taskUpdated = await TaskRepository.findByPk(task_id);
+
+        res.status(200).json(taskUpdated);
     } catch(err) {
         return res.status(500).send(err);
     }
@@ -130,6 +162,7 @@ async function deleteTask(req, res) {
 module.exports = {
     findAllTasks,
     findTask,
+    findMemberTask,
     addTask,
     updateTask,
     deleteTask,
