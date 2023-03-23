@@ -22,7 +22,7 @@ async function findTask(req, res) {
     const { task_id } = req.params
     try {
         const task = await TaskRepository.findByPk(task_id);
-        if(task === null) {
+        if(!task) {
             return res.status(400).json({ message: 'Esta task não existe' });
         }
         res.status(200).json(task);
@@ -41,9 +41,9 @@ async function addTask(req, res) {
         const trainer = await TrainerRespository.findByPk(trainer_id);
         const member = await MemberRespository.findByPk(member_id);
 
-        if(trainer === null) {
+        if(!trainer) {
             return res.status(400).json({ message: 'Este treinador não existe' });
-        } else if (member === null) {
+        } else if (!member) {
             return res.status(400).json({ message: 'Este membro não existe' });
         }
 
@@ -67,11 +67,11 @@ async function updateTask(req, res) {
         const member = await MemberRespository.findByPk(member_id);
         const tasks = await TaskRepository.findByPk(task_id);
         
-        if(trainer === null) {
+        if(!trainer) {
             return res.status(400).json({ message: 'Este trainador não existe' });
-        } else if(member === null) {
+        } else if(!member) {
             return res.status(400).json({ message: 'Este membro não existe' });
-        }else if(tasks === null) {
+        }else if(!tasks) {
             return res.status(400).json({ message: 'Esta task não existe' });
         }
         
@@ -105,11 +105,11 @@ async function deleteTask(req, res) {
         const member = await MemberRespository.findByPk(member_id);
         const tasks = await TaskRepository.findByPk(task_id);
         
-        if(trainer === null) {
+        if(!trainer) {
             return res.status(400).json({ message: 'Este trainador não existe' });
-        } else if(member === null) {
+        } else if(!member) {
             return res.status(400).json({ message: 'Este membro não existe' });
-        }else if(tasks === null) {
+        }else if(!tasks) {
             return res.status(400).json({ message: 'Esta task não existe' });
         }
 
