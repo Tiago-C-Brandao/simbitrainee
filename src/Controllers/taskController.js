@@ -23,7 +23,7 @@ async function findTask(req, res) {
     try {
         const task = await TaskRepository.findByPk(task_id);
         if(!task) {
-            return res.status(400).json({ message: 'Esta task não existe' });
+            return res.status(404).json({ message: 'Esta task não existe' });
         }
         res.status(200).json(task);
     } catch (err) {
@@ -42,14 +42,14 @@ async function addTask(req, res) {
         const member = await MemberRespository.findByPk(member_id);
 
         if(!trainer) {
-            return res.status(400).json({ message: 'Este treinador não existe' });
+            return res.status(404).json({ message: 'Este treinador não existe' });
         } else if (!member) {
-            return res.status(400).json({ message: 'Este membro não existe' });
+            return res.status(404).json({ message: 'Este membro não existe' });
         }
 
         await TaskRepository.create({
             task_title, task_description, date_delivery, member_id: member_id,
-        }).then((result) => res.status(200).json(result));
+        }).then((result) => res.status(201).json(result));
     } catch(err) {
         return res.status(500).sen(err);
     }
@@ -68,11 +68,11 @@ async function updateTask(req, res) {
         const tasks = await TaskRepository.findByPk(task_id);
         
         if(!trainer) {
-            return res.status(400).json({ message: 'Este trainador não existe' });
+            return res.status(404).json({ message: 'Este trainador não existe' });
         } else if(!member) {
-            return res.status(400).json({ message: 'Este membro não existe' });
+            return res.status(404).json({ message: 'Este membro não existe' });
         }else if(!tasks) {
-            return res.status(400).json({ message: 'Esta task não existe' });
+            return res.status(404).json({ message: 'Esta task não existe' });
         }
         
         if(status !== "Entregue") {
@@ -106,11 +106,11 @@ async function deleteTask(req, res) {
         const tasks = await TaskRepository.findByPk(task_id);
         
         if(!trainer) {
-            return res.status(400).json({ message: 'Este trainador não existe' });
+            return res.status(404).json({ message: 'Este trainador não existe' });
         } else if(!member) {
-            return res.status(400).json({ message: 'Este membro não existe' });
+            return res.status(404).json({ message: 'Este membro não existe' });
         }else if(!tasks) {
-            return res.status(400).json({ message: 'Esta task não existe' });
+            return res.status(404).json({ message: 'Esta task não existe' });
         }
 
         await TaskRepository.destroy({
