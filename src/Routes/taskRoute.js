@@ -5,7 +5,7 @@ const trainer = require('../Controllers/trainerController');
 
 const router = Router();
 
-router.get('/tasks/find_all', tasks.findAll);
+router.get('/tasks/find_all', tasks.findAllTasks);
 router.get('/tasks/find_task/:task_id', tasks.findTask);
 
 router.post('/trainers/:trainer_id/members/:member_id/tasks/creater', tasks.addTask);

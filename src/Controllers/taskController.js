@@ -5,7 +5,7 @@ const TrainerRespository = require("../Models/trainerModel");
 
 //--------------------------------- GET ----------------------------------//
 
-function findAll(req, res) {
+function findAllTasks(req, res) {
     try{
         TaskRepository.findAll().then((result) => res.status(200).json(result));
     } catch (err){
@@ -123,7 +123,7 @@ async function deleteTask(req, res) {
 //--------------------------------- EXPORT ---------------------------------//
 
 module.exports = {
-    findAll,
+    findAllTasks,
     findTask,
     addTask,
     updateTask,
