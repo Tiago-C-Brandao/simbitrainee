@@ -5,9 +5,14 @@ const TrainerRespository = require("../Models/trainerModel");
 
 //--------------------------------- GET ----------------------------------//
 
-function findAllTasks(req, res) {
+async function findAllTasks(req, res) {
     try{
-        TaskRepository.findAll().then((result) => res.status(200).json(result));
+        const findAll = await TaskRepository.findAll()
+
+        if(findAll.length === 0){
+            return res.status(404).json({ message: 'Nenhuma task encontrada' });
+        }
+        res.status(200).json(findAll);
     } catch (err){
         return res.status(500).send(err);
     }
