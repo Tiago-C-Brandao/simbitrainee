@@ -78,7 +78,7 @@ async function updateTask(req, res) {
         if(status !== "Entregue") {
             dateSend = null
         } else {
-            dateSend = new Date()
+            dateSend = tasks.updatedAt
         }
         await TaskRepository.update(
             {
@@ -90,7 +90,7 @@ async function updateTask(req, res) {
                 }
             }
         );
-        return res.status(200).json(tasks);
+        TaskRepository.findByPk(task_id).then((result) => res.status(200).json(result));
     } catch(err) {
         return res.status(500).send(err);
     }
